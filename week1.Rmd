@@ -1,0 +1,102 @@
+---
+title: "Week1"
+author: "Yi Li"
+date: "2/11/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+###AN EXAMPLE: GDP AND LIFE EXPECTANCY
+```{r}
+install.packages("gapminder", repos = "http://cran.us.r-project.org")
+library(ggplot2)
+library(gapminder)
+
+#Excerpt of the Gapminder data on life expectancy, GDP per capita, and population by country.
+#Look at data
+
+gapminder
+str(gapminder)
+summary(gapminder)
+```
+
+##GGPlot
+##1st layer: Data
+```{r}
+p <- ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp)) # make the graph to an object 
+p
+p + geom_point() # and then tell ggplot we want a scater plot
+ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp)) + geom_point() # same as above
+```
+
+Log Transformation
+```{r}
+# what is the difference？
+ggplot( data = gapminder, aes(x = log(gdpPercap), y = lifeExp)) + geom_point() #ln = log10
+ggplot( data = gapminder, aes(x = log10(gdpPercap), y = lifeExp)) + geom_point() 
+p <- ggplot( data = gapminder, aes(x = log(gdpPercap), y = lifeExp))
+p1 <- ggplot( data = gapminder, aes(x = log10(gdpPercap), y = lifeExp)) + geom_point() + scale_x_log10()
+```
+
+Color
+```{r}
+p + geom_point( aes(color = continent) )
+p2 <- ggplot( data = gapminder, aes(x= log10(gdpPercap), y = lifeExp)) + scale_x_log10() + geom_point(aes(color = continent))
+p2
+```
+
+##Reduce overplotting
+```{r}
+?geom_point
+
+ggplot( data = gapminder, aes(x= log10(gdpPercap), y = lifeExp)) + scale_x_log10() + geom_point(aes(color = continent, alpha = 0.3, size = 3))
+
+ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp)) + scale_x_log10() + geom_point(aes(color = continent), alpha = 0.3, size=3)  
+
+ggplot(data = gapminder, aes(x= log10(gdpPercap), y = lifeExp)) + scale_x_log10()
+ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp)) + scale_x_log10()
+```
+
+##Curve Fit: 
+geom_smooth()
+Fiitting a curve to data, aka lowess, aka loess
+(https://www.youtube.com/watch?v=Vf7oJ6z2LCc)
+```{r}
+p <- ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp)) + scale_x_log10() 
+p + geom_point(aes(color = continent)) + geom_smooth() #Display confidence interval around smooth
+p + geom_point(aes(color = continent)) + geom_smooth(color = 'black', lwd = 2, se = FALSE)# lwd = line width    se = standard error
+```
+Change the order of layers
+```{r}
+p + geom_smooth(color = "orange") + geom_point(aes(color = continent))
+```
+Liner fit
+```{r}
+p + geom_point(aes(color = continent)) + geom_smooth(method = "lm")
+```
+Curve Fit by Continent
+```{r}
+p + geom_point(aes(color = continent)) + geom_smooth(aes(color = continent), se = FALSE, lwd = 2)
+```
+
+##Use aes() at the Beginning to Add Overall Grouping 
+```{r}
+p + aes(color = continent) + geom_point() + geom_smooth(lwd = 2, se = FALSE)
+```
+##A sum of color = continent
+```{r}
+ggplot(gapminder, aes(x = gdpPercap, y = lifeExp, color = continent)) +
+  geom_point(aes(color = continent)) + scale_x_log10() +
+  geom_smooth(color="black")
+
+ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) +
+  geom_point(aes(color = continent)) + scale_x_log10() +
+  geom_smooth(color="black")
+
+ggplot(gapminder, aes(x = gdpPercap, y = lifeExp, color = continent)) +
+  geom_point() + scale_x_log10() +
+  geom_smooth(color="black")
+```
+
+##
+
